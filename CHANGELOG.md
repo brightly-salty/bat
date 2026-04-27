@@ -22,6 +22,7 @@
 
 ## Bugfixes
 - Sanitize control characters in filenames before displaying them in the file header, error messages, and the terminal title, preventing ANSI escape injection via crafted filenames. Closes #3054, see #3691 (@curious-rabbit)
+- Report initial input read errors instead of treating them as empty input. Closes #3002, see #3706 (@lawrence3699)
 - Treat ZIP archives as binary content based on their magic header, see #3686 (@officialasishkumar)
 - Fix i686 `.deb` package using incorrect architecture name (`i686` instead of `i386`), preventing installation on Debian. Closes #3611, see #3650 (@Sim-hu)
 - Fix inconsistent `.deb` MUSL package names (aarch64-musl used `arm64` instead of `musl-linux-arm64`, and `musleabihf` target missed `bat-musl` prefix). Closes #3482, see #3642 (@mvanhorn)
@@ -37,15 +38,18 @@
 - Fixed test compatibility with future Cargo build directory changes, see #3550 (@nmacl)
 - Fixed bug caused by using `--plain` and `--terminal-width=N` flags simultaneously, see #3529 (@H4k1l)
 - Fixed syntax tests path, see #3610 (@foxfromworld)
+- Fix zsh tab completion word-splitting language names containing spaces (e.g. `HTML (Jinja2)`, `Apache Conf`), see #3693 (@YoshKoz)
 
 ## Other
 - Use git version of cross. See #3533 (@OctopusET)
 - Bump MSRV to 1.88, update `time` crate to 0.3.47 to fix RUSTSEC-2026-0009, see #3581 (@NORMAL-EX)
 - Allow home and end keys to be used with builtin pager, see #3651 (@keith-hall)
 - Builtin syntax mapping: cleanup matcher glob parsing logic #3652 (@cyqsimon)
+- Statically link the CRT for MSVC builds via Cargo config to avoid runtime DLL dependencies. Closes #3634, see #3692 (@barry3406)
 
 ## Syntaxes
 
+- Add shebang-based detection for Tcl (`tclsh`, `wish`) and Expect (`expect`) scripts, see #3647 (@mvanhorn)
 - Change the URL of Zig submodule from GitHub to Codeberg, see #3519 (@sorairolake)
 - Don't color strings inside CSV files, to make it easier to tell which column they belong to, see #3521 (@keith-hall)
 - Add syntax highlighting support for COBOL, see #3584 (@adukhan99)
