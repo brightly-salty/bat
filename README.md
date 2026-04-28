@@ -43,7 +43,7 @@ languages:
 ### Git integration
 
 `bat` communicates with `git` to show modifications with respect to the index
-(see left side bar):
+(see left sidebar):
 
 ![Git integration example](https://i.imgur.com/2lSW4RE.png)
 
@@ -198,7 +198,7 @@ bat main.cpp | xclip
 export MANPAGER="bat -plman"
 man 2 select
 ```
-(replace `bat` with `batcat` if you are on Debian or Ubuntu)
+(on some older Debian or Ubuntu releases, the executable is named `batcat` instead of `bat`)
 
 If you prefer to have this bundled in a new command, you can also use [`batman`](https://github.com/eth-p/bat-extras/blob/master/doc/batman.md).
 
@@ -246,6 +246,14 @@ abbr -a --position anywhere -- -h '-h | bat -plhelp'
 
 This way, you can keep on using `cp --help`, but get colorized help pages.
 
+> [!TIP]
+> To remove these abbreviations later, run:
+> ```fish
+> abbr -e -- --help
+> abbr -e -- -h
+> ```
+> The `--` before the abbreviation name is required because `--help` and `-h` start with dashes, which would otherwise be interpreted as flags to `abbr` itself.
+
 Be aware that in some cases, `-h` may not be a shorthand of `--help` (for example with `ls`). In cases where you need to use `-h` 
 as a command argument you can prepend `\` to the argument (eg. `ls \-h`) to escape the aliasing defined above. 
 
@@ -276,8 +284,8 @@ If your Ubuntu/Debian installation is new enough you can simply run:
 sudo apt install bat
 ```
 
-**Important**: If you install `bat` this way, please note that the executable may be installed as `batcat` instead of `bat` (due to [a name
-clash with another package](https://github.com/sharkdp/bat/issues/982)). You can set up a `bat -> batcat` symlink or alias to prevent any issues that may come up because of this and to be consistent with other distributions:
+**Important**: On some older Ubuntu/Debian releases, the executable is installed as `batcat` instead of `bat` (due to [a name
+clash with another package](https://github.com/sharkdp/bat/issues/982)). On newer releases, the executable is available as `bat`. If `bat --version` does not work after installation, try `batcat --version` instead. You can set up a `bat -> batcat` symlink or alias to prevent any issues that may come up because of this and to be consistent with other distributions:
 ``` bash
 mkdir -p ~/.local/bin
 ln -s /usr/bin/batcat ~/.local/bin/bat
@@ -581,7 +589,8 @@ syntax:
 
 This works very similar to how we add new syntax definitions.
 > [!NOTE]
-> Themes are stored in [`.tmTheme` files](https://www.sublimetext.com/docs/color_schemes_tmtheme.html).
+> Custom themes must be stored in [`.tmTheme` files](https://www.sublimetext.com/docs/color_schemes_tmtheme.html).
+> Newer `.sublime-color-scheme` files are currently not supported.
 
 First, create a folder with the new syntax highlighting themes:
 ```bash
