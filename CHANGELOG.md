@@ -1,20 +1,29 @@
 # unreleased
 
 
+## Other
+
+- Add instructions for removing fish help abbreviations to README, see #3655 (@claw-explorer). Closes #3536
+- Add .NET slnx extension, see #3682 (@ltrzesniewski)
+
 ## Features
 
 - Preserve `--diff` change markers and snip separators when `--plain` is set. Closes #3630, see #3643 (@mvanhorn)
 - Added support for `hidden_file_extensions` from `.sublime-syntax` files, see #3613 (@Matei02355)
 - Add word wrapping mode via `--wrap=word`, see #3597 (@veeceey)
+- Support configuring `--terminal-width` via `BAT_WIDTH`, see #3679 (@officialasishkumar)
 - Implement `--unbuffered` mode for streaming input, allowing partial lines to display immediately (e.g. `tail -f | bat -u`). Closes #3555, see #3583 (@mainnebula)
 - Added an initial `flake.nix` for a ready made development environment; see #3578 (@vorburger)
 - Add `--quiet-empty` (`-E`) flag to suppress output when input is empty. Closes #1936, see #3563 (@NORMAL-EX)
 - Improve native man pages and command help syntax highlighting by stripping overstriking, see #3517 (@akirk)
 - Add `--fallback-syntax`/`--fallback-language` to apply syntax highlighting only when auto-detection fails, see #1341 (@Xavrir)
 - Map `BUILD` case sensitively to Python (Starlark) for Bazel, see #3576 (@vorburger)
+- Syntax highlighting for Python files using uv as script runner in shebang #3689 (@janlarres)
 
 ## Bugfixes
 - Fix inverted `$LESSCLOSE` warning so bat warns on nonzero exit, not on success. See #3654 (@cuiweixie)
+- Report initial input read errors instead of treating them as empty input. Closes #3002, see #3706 (@lawrence3699)
+- Treat ZIP archives as binary content based on their magic header, see #3686 (@officialasishkumar)
 - Fix i686 `.deb` package using incorrect architecture name (`i686` instead of `i386`), preventing installation on Debian. Closes #3611, see #3650 (@Sim-hu)
 - Fix inconsistent `.deb` MUSL package names (aarch64-musl used `arm64` instead of `musl-linux-arm64`, and `musleabihf` target missed `bat-musl` prefix). Closes #3482, see #3642 (@mvanhorn)
 - Fix incorrect text width computation when using `--binary=as-text` with non-printable characters in caret notation, see #3640 and #3631 (@eyupcanakman)
@@ -29,21 +38,25 @@
 - Fixed test compatibility with future Cargo build directory changes, see #3550 (@nmacl)
 - Fixed bug caused by using `--plain` and `--terminal-width=N` flags simultaneously, see #3529 (@H4k1l)
 - Fixed syntax tests path, see #3610 (@foxfromworld)
+- Fix zsh tab completion word-splitting language names containing spaces (e.g. `HTML (Jinja2)`, `Apache Conf`), see #3693 (@YoshKoz)
 
 ## Other
 - Use git version of cross. See #3533 (@OctopusET)
 - Bump MSRV to 1.88, update `time` crate to 0.3.47 to fix RUSTSEC-2026-0009, see #3581 (@NORMAL-EX)
 - Allow home and end keys to be used with builtin pager, see #3651 (@keith-hall)
 - Builtin syntax mapping: cleanup matcher glob parsing logic #3652 (@cyqsimon)
+- Statically link the CRT for MSVC builds via Cargo config to avoid runtime DLL dependencies. Closes #3634, see #3692 (@barry3406)
 
 ## Syntaxes
 
+- Add shebang-based detection for Tcl (`tclsh`, `wish`) and Expect (`expect`) scripts, see #3647 (@mvanhorn)
 - Change the URL of Zig submodule from GitHub to Codeberg, see #3519 (@sorairolake)
 - Don't color strings inside CSV files, to make it easier to tell which column they belong to, see #3521 (@keith-hall)
 - Add syntax highlighting support for COBOL, see #3584 (@adukhan99)
 - Fixed manpage syntax so that ANSI escape codes don't get incorrectly highlighted and thus broken, see #3586 (@BlueElectivire)
 - Map several Google Cloud CLI config files to their appropriate syntax #3635 (@victor-gp)
 - Map all ignore dotfiles to Git Ignore syntax #3636 (@victor-gp)
+- Improved Kotlin syntax, see #3699 (@guille)
 
 ## Themes
 
