@@ -19,20 +19,6 @@
   [<a href="doc/README-ru.md">Русский</a>]
 </p>
 
-### Sponsors
-
-A special *thank you* goes to our biggest <a href="doc/sponsors.md">sponsors</a>:<br>
-
-<p>
-<a href="https://www.warp.dev/bat">
-  <img src="doc/sponsors/warp-logo.png" width="200" alt="Warp">
-  <br>
-  <strong>Warp, the intelligent terminal</strong>
-  <br>
-  <sub>Available on MacOS, Linux, Windows</sub>
-</a>
-</p>
-
 ### Syntax highlighting
 
 `bat` supports syntax highlighting for a large number of programming and markup
