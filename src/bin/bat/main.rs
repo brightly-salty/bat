@@ -259,7 +259,9 @@ pub fn list_themes(
 fn set_terminal_title_to(new_terminal_title: String) {
     let osc_command_for_setting_terminal_title = "\x1b]0;";
     let osc_end_command = "\x07";
-    print!("{osc_command_for_setting_terminal_title}{new_terminal_title}{osc_end_command}");
+    // Prevent BEL/ESC/C1 bytes in the title from terminating or nesting the OSC.
+    let safe_title = bat::sanitize_for_terminal(&new_terminal_title);
+    print!("{osc_command_for_setting_terminal_title}{safe_title}{osc_end_command}");
     io::stdout().flush().unwrap();
 }
 
