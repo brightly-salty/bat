@@ -22,6 +22,9 @@
 
 ## Bugfixes
 - Fix `--list-themes` unconditionally probing the terminal via OSC 10/11 even when `--theme` was set to an explicit value, see #3700 (regression introduced in bc42149a). (@optimistiCli)
+- Fix inverted `$LESSCLOSE` warning so bat warns on nonzero exit, not on success. See #3654 (@cuiweixie)
+- Sanitize control characters in filenames before displaying them in the file header, error messages, and the terminal title, preventing ANSI escape injection via crafted filenames. Closes #3054, see #3691 (@curious-rabbit)
+- Report initial input read errors instead of treating them as empty input. Closes #3002, see #3706 (@lawrence3699)
 - Treat ZIP archives as binary content based on their magic header, see #3686 (@officialasishkumar)
 - Fix i686 `.deb` package using incorrect architecture name (`i686` instead of `i386`), preventing installation on Debian. Closes #3611, see #3650 (@Sim-hu)
 - Fix inconsistent `.deb` MUSL package names (aarch64-musl used `arm64` instead of `musl-linux-arm64`, and `musleabihf` target missed `bat-musl` prefix). Closes #3482, see #3642 (@mvanhorn)
@@ -37,6 +40,7 @@
 - Fixed test compatibility with future Cargo build directory changes, see #3550 (@nmacl)
 - Fixed bug caused by using `--plain` and `--terminal-width=N` flags simultaneously, see #3529 (@H4k1l)
 - Fixed syntax tests path, see #3610 (@foxfromworld)
+- Fix zsh tab completion word-splitting language names containing spaces (e.g. `HTML (Jinja2)`, `Apache Conf`), see #3693 (@YoshKoz)
 
 ## Other
 - Use git version of cross. See #3533 (@OctopusET)
@@ -54,6 +58,7 @@
 - Fixed manpage syntax so that ANSI escape codes don't get incorrectly highlighted and thus broken, see #3586 (@BlueElectivire)
 - Map several Google Cloud CLI config files to their appropriate syntax #3635 (@victor-gp)
 - Map all ignore dotfiles to Git Ignore syntax #3636 (@victor-gp)
+- Improved Kotlin syntax, see #3699 (@guille)
 
 ## Themes
 

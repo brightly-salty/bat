@@ -19,20 +19,6 @@
   [<a href="doc/README-ru.md">Русский</a>]
 </p>
 
-### Sponsors
-
-A special *thank you* goes to our biggest <a href="doc/sponsors.md">sponsors</a>:<br>
-
-<p>
-<a href="https://www.warp.dev/bat">
-  <img src="doc/sponsors/warp-logo.png" width="200" alt="Warp">
-  <br>
-  <strong>Warp, the intelligent terminal</strong>
-  <br>
-  <sub>Available on MacOS, Linux, Windows</sub>
-</a>
-</p>
-
 ### Syntax highlighting
 
 `bat` supports syntax highlighting for a large number of programming and markup
@@ -207,12 +193,6 @@ Note that the [Manpage syntax](assets/syntaxes/02_Extra/Manpage.sublime-syntax) 
 #### `prettier` / `shfmt` / `rustfmt`
 
 The [`prettybat`](https://github.com/eth-p/bat-extras/blob/master/doc/prettybat.md) script is a wrapper that will format code and print it with `bat`.
-
-#### `Warp`
-
-<a href="https://app.warp.dev/drive/folder/-Bat-Warp-Pack-lxhe7HrEwgwpG17mvrFSz1">
-  <img src="doc/sponsors/warp-pack-header.png" alt="Warp">
-</a>
 
 #### Highlighting `--help` messages
 
