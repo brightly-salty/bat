@@ -507,6 +507,30 @@ and line numbers but no grid and no file header. Set the `BAT_STYLE` environment
 variable to make these changes permanent or use `bat`'s
 [configuration file](#configuration-file).
 
+By default, `bat` enables `changes`, `grid`, `header-filename`, `numbers`, and `snip`.
+
+The available pre-defined styles are:
+
+| Style | Description |
+|-------|-------------|
+| `default` | Enables the recommended style components listed above. |
+| `full` | Enables all available components. |
+| `auto` | Same as `default`, unless the output is piped. |
+| `plain` | Disables all available components. |
+
+The available individual components are:
+
+| Component | Description |
+|-----------|-------------|
+| `changes` | Show Git modification markers. |
+| `header` | Alias for `header-filename`. |
+| `header-filename` | Show filenames before the content. |
+| `header-filesize` | Show file sizes before the content. |
+| `grid` | Vertical/horizontal lines to separate the side bar and header from the content. |
+| `rule` | Horizontal lines to delimit files. |
+| `numbers` | Show line numbers in the side bar. |
+| `snip` | Draw separation lines between distinct line ranges. |
+
 >[!tip]
 > If you specify a default style in `bat`'s config file, you can change which components
 > are displayed during a single run of `bat` using the `--style` command-line argument.
