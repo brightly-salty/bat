@@ -307,7 +307,7 @@ pacman -S bat
 
 ### On Fedora
 
-You can install [the `bat` package](https://koji.fedoraproject.org/koji/packageinfo?packageID=27506) from the official sources:
+You can install [the `bat` package](https://packages.fedoraproject.org/pkgs/rust-bat/bat/) from the official sources:
 
 ```bash
 dnf install bat
