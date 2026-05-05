@@ -14,6 +14,26 @@ use crate::{
     input::{Input, InputKind, InputReader, OpenedInput, OpenedInputKind},
 };
 
+/// Wrap `s` in POSIX single quotes so it cannot break out of a shell argument.
+fn shell_quote(s: &str) -> String {
+    let mut quoted = String::with_capacity(s.len() + 2);
+    quoted.push('\'');
+    for c in s.chars() {
+        if c == '\'' {
+            quoted.push_str("'\\''");
+        } else {
+            quoted.push(c);
+        }
+    }
+    quoted.push('\'');
+    quoted
+}
+
+/// Substitute the first `%s` in a $LESSOPEN/$LESSCLOSE template with a quoted value.
+fn shell_substitute(template: &str, replacement: &str) -> String {
+    template.replacen("%s", &shell_quote(replacement), 1)
+}
+
 /// Preprocess files and/or stdin using $LESSOPEN and $LESSCLOSE
 pub(crate) struct LessOpenPreprocessor {
     lessopen: String,
@@ -87,7 +107,7 @@ impl LessOpenPreprocessor {
                     None => return input.open(stdin, stdout_identifier),
                 };
 
-                let mut lessopen_command = shell(self.lessopen.replacen("%s", path_str, 1));
+                let mut lessopen_command = shell(shell_substitute(&self.lessopen, path_str));
                 lessopen_command.stdout(Stdio::piped());
 
                 let lessopen_output = match lessopen_command.execute_output() {
@@ -122,7 +142,7 @@ impl LessOpenPreprocessor {
                     let mut stdin_buffer = Vec::new();
                     stdin.read_to_end(&mut stdin_buffer)?;
 
-                    let mut lessopen_command = shell(self.lessopen.replacen("%s", "-", 1));
+                    let mut lessopen_command = shell(shell_substitute(&self.lessopen, "-"));
                     lessopen_command.stdout(Stdio::piped());
 
                     let lessopen_output = match lessopen_command.execute_input_output(&stdin_buffer)
@@ -181,7 +201,7 @@ impl LessOpenPreprocessor {
                         lessclose: self
                             .lessclose
                             .as_ref()
-                            .map(|s| s.replacen("%s", &path_str, 1).replacen("%s", &stdout, 1)),
+                            .map(|s| shell_substitute(&shell_substitute(s, &path_str), &stdout)),
                     }
                 } else {
                     Preprocessed {
@@ -189,7 +209,7 @@ impl LessOpenPreprocessor {
                         lessclose: self
                             .lessclose
                             .as_ref()
-                            .map(|s| s.replacen("%s", &path_str, 1).replacen("%s", "-", 1)),
+                            .map(|s| shell_substitute(&shell_substitute(s, &path_str), "-")),
                     }
                 },
             ))?,
@@ -383,5 +403,44 @@ mod tests {
         reset_env_vars();
 
         Ok(())
+    }
+
+    #[test]
+    fn shell_quote_plain_filename() {
+        assert_eq!(super::shell_quote("file.txt"), "'file.txt'");
+        assert_eq!(super::shell_quote("with space.txt"), "'with space.txt'");
+        assert_eq!(super::shell_quote(""), "''");
+        assert_eq!(super::shell_quote("-"), "'-'");
+    }
+
+    #[test]
+    fn shell_quote_metacharacters_neutralised() {
+        assert_eq!(super::shell_quote("; rm -rf ~ ;"), "'; rm -rf ~ ;'");
+        assert_eq!(super::shell_quote("$(payload)"), "'$(payload)'");
+        assert_eq!(super::shell_quote("`payload`"), "'`payload`'");
+        assert_eq!(super::shell_quote("a|b&c;d"), "'a|b&c;d'");
+        assert_eq!(super::shell_quote("..>/dev/null"), "'..>/dev/null'");
+        assert_eq!(super::shell_quote("\n\t"), "'\n\t'");
+    }
+
+    #[test]
+    fn shell_quote_embedded_single_quote() {
+        assert_eq!(super::shell_quote("it's"), "'it'\\''s'");
+        assert_eq!(super::shell_quote("'"), "''\\'''");
+        assert_eq!(super::shell_quote("a'b'c"), "'a'\\''b'\\''c'");
+    }
+
+    #[test]
+    fn shell_substitute_only_replaces_first_percent_s() {
+        assert_eq!(super::shell_substitute("echo %s", "x"), "echo 'x'");
+        assert_eq!(super::shell_substitute("echo %s %s", "x"), "echo 'x' %s");
+    }
+
+    #[test]
+    fn shell_substitute_protects_against_filename_injection() {
+        let template = "|preproc %s";
+        let attacker_filename = "; rm -rf ~ ;";
+        let result = super::shell_substitute(template, attacker_filename);
+        assert_eq!(result, "|preproc '; rm -rf ~ ;'");
     }
 }
