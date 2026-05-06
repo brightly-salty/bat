@@ -14,8 +14,16 @@ use crate::{
     input::{Input, InputKind, InputReader, OpenedInput, OpenedInputKind},
 };
 
-/// Wrap `s` in POSIX single quotes so it cannot break out of a shell argument.
+/// Wrap `s` in POSIX single quotes. An embedded `'` is encoded as `'\''`
+/// (close, escaped quote, reopen) since `'...'` has no escape character.
 fn shell_quote(s: &str) -> String {
+    if !s.contains('\'') {
+        let mut quoted = String::with_capacity(s.len() + 2);
+        quoted.push('\'');
+        quoted.push_str(s);
+        quoted.push('\'');
+        return quoted;
+    }
     let mut quoted = String::with_capacity(s.len() + 2);
     quoted.push('\'');
     for c in s.chars() {
@@ -32,6 +40,25 @@ fn shell_quote(s: &str) -> String {
 /// Substitute the first `%s` in a $LESSOPEN/$LESSCLOSE template with a quoted value.
 fn shell_substitute(template: &str, replacement: &str) -> String {
     template.replacen("%s", &shell_quote(replacement), 1)
+}
+
+/// Substitute the first two `%s` occurrences positionally in one pass; chaining
+/// `shell_substitute` twice would mis-target if `first` itself contains `%s`.
+fn shell_substitute_two(template: &str, first: &str, second: &str) -> String {
+    let mut out = String::with_capacity(template.len() + first.len() + second.len() + 4);
+    let mut remaining = template;
+    let mut to_substitute = [Some(first), Some(second)];
+    for slot in &mut to_substitute {
+        if let Some(idx) = remaining.find("%s") {
+            out.push_str(&remaining[..idx]);
+            out.push_str(&shell_quote(slot.take().unwrap()));
+            remaining = &remaining[idx + 2..];
+        } else {
+            break;
+        }
+    }
+    out.push_str(remaining);
+    out
 }
 
 /// Preprocess files and/or stdin using $LESSOPEN and $LESSCLOSE
@@ -201,7 +228,7 @@ impl LessOpenPreprocessor {
                         lessclose: self
                             .lessclose
                             .as_ref()
-                            .map(|s| shell_substitute(&shell_substitute(s, &path_str), &stdout)),
+                            .map(|s| shell_substitute_two(s, &path_str, &stdout)),
                     }
                 } else {
                     Preprocessed {
@@ -209,7 +236,7 @@ impl LessOpenPreprocessor {
                         lessclose: self
                             .lessclose
                             .as_ref()
-                            .map(|s| shell_substitute(&shell_substitute(s, &path_str), "-")),
+                            .map(|s| shell_substitute_two(s, &path_str, "-")),
                     }
                 },
             ))?,
@@ -442,5 +469,27 @@ mod tests {
         let attacker_filename = "; rm -rf ~ ;";
         let result = super::shell_substitute(template, attacker_filename);
         assert_eq!(result, "|preproc '; rm -rf ~ ;'");
+    }
+
+    #[test]
+    fn shell_substitute_two_replaces_first_two_placeholders() {
+        assert_eq!(
+            super::shell_substitute_two("echo %s and %s done", "a", "b"),
+            "echo 'a' and 'b' done"
+        );
+        // A third %s is left alone.
+        assert_eq!(
+            super::shell_substitute_two("echo %s %s %s", "a", "b"),
+            "echo 'a' 'b' %s"
+        );
+    }
+
+    #[test]
+    fn shell_substitute_two_handles_percent_s_in_first_argument() {
+        // The chained-substitute approach would replace the injected `%s` here.
+        assert_eq!(
+            super::shell_substitute_two("a %s b %s c", "%s", "second"),
+            "a '%s' b 'second' c"
+        );
     }
 }
